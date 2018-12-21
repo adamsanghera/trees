@@ -2,6 +2,7 @@ package trees
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -31,6 +32,7 @@ func New(password string) (*Trees, error) {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/near-me", func(w http.ResponseWriter, req *http.Request) {
+		log.Printf("Near me request %+v", req)
 		latStr := req.URL.Query().Get("latitude")
 		lonStr := req.URL.Query().Get("longitude")
 		radStr := req.URL.Query().Get("radius")
@@ -115,6 +117,7 @@ func New(password string) (*Trees, error) {
 	})
 
 	mux.HandleFunc("/get-details", func(w http.ResponseWriter, req *http.Request) {
+		log.Printf("Details request %+v", req)
 		treeIDstr := req.URL.Query().Get("tree_id")
 		if treeIDstr == "" {
 			w.WriteHeader(http.StatusBadRequest)

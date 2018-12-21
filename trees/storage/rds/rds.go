@@ -128,7 +128,7 @@ func (pg *Postgres) GetDetails(req *treespb.GetDetailsRequest) (*treespb.GetDeta
 		boroughName                                                        string
 		lat, lon                                                           float32
 	)
-	err := r.Scan(&treeID, &treeD, &stumpD, &createdAt,
+	err := r.Scan(&treeID, &createdAt, &treeD, &stumpD,
 		&status, &health, &spcLatin, &spcCommon, &steward,
 		&curbLocation, &guards, &sidewalk, &userType, &problems,
 		&rootStone, &rootGrate, &rootOther, &trunkOther, &trunkWire,
