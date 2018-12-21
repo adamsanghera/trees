@@ -7,4 +7,5 @@ type Storage interface {
 
 	// Queries
 	Search(*treespb.SearchRequest) (*treespb.SearchResponse, error)
+	GetDetails(*treespb.GetDetailsRequest) (*treespb.GetDetailsResponse, error)
 }

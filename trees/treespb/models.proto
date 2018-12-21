@@ -90,3 +90,11 @@ message SearchRequest {
 message SearchResponse {
   repeated CondensedTree trees = 1;
 }
+
+message GetDetailsRequest {
+  int64 tree_id = 1;
+}
+
+message GetDetailsResponse {
+  Tree tree = 1;
+}

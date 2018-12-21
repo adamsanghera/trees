@@ -114,6 +114,36 @@ func New(password string) (*Trees, error) {
 		}
 	})
 
+	mux.HandleFunc("/get-details", func(w http.ResponseWriter, req *http.Request) {
+		treeIDstr := req.URL.Query().Get("tree_id")
+		if treeIDstr == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("No tree id provided"))
+			return
+		}
+
+		treeID, err := strconv.Atoi(treeIDstr)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Error parsing tree id " + err.Error()))
+		}
+
+		resp, err := t.strg.GetDetails(&treespb.GetDetailsRequest{
+			TreeId: int64(treeID),
+		})
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Error while querying database " + err.Error()))
+		}
+
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Failed to encode JSON response " + err.Error()))
+			return
+		}
+	})
+
 	t.srv = &http.Server{
 		Addr:    ":8080",
 		Handler: mux,

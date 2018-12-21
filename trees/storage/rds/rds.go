@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/adamsanghera/trees/trees/treespb"
 
@@ -102,5 +103,74 @@ func (pg *Postgres) Search(req *treespb.SearchRequest) (*treespb.SearchResponse,
 
 	return &treespb.SearchResponse{
 		Trees: resp,
+	}, nil
+}
+
+// GetDetails does what it says
+func (pg *Postgres) GetDetails(req *treespb.GetDetailsRequest) (*treespb.GetDetailsResponse, error) {
+	r := pg.db.QueryRow(`
+	SELECT tree_id, created_at, tree_diameter,
+		stump_diameter, status, health, spc_latin, spc_common,
+		steward, curb_location, guards, sidewalk, user_type, problems,
+		root_stone, root_grate, root_other, trunk_other, trunk_wire, trunk_light,
+		branch_light, branch_shoe, branch_other, address, zipcode, zip_city,
+		borough_name, ST_X(location), ST_Y(location)
+	FROM trees
+	WHERE tree_id=$1`, req.TreeId)
+
+	var (
+		treeID, treeD, stumpD                                              int64
+		createdAt                                                          time.Time
+		status, health, spcLatin, spcCommon, steward                       string
+		curbLocation, guards, sidewalk, userType, problems                 string
+		rootStone, rootGrate, rootOther, trunkOther, trunkWire, trunkLight string
+		branchLight, branchShoe, branchOther, address, zipcode, zipCity    string
+		boroughName                                                        string
+		lat, lon                                                           float32
+	)
+	err := r.Scan(&treeID, &treeD, &stumpD, &createdAt,
+		&status, &health, &spcLatin, &spcCommon, &steward,
+		&curbLocation, &guards, &sidewalk, &userType, &problems,
+		&rootStone, &rootGrate, &rootOther, &trunkOther, &trunkWire,
+		&trunkLight, &branchLight, &branchShoe, &branchOther,
+		&address, &zipcode, &zipCity, &boroughName, &lat, &lon)
+	if err != nil {
+		return nil, err
+	}
+
+	return &treespb.GetDetailsResponse{
+		Tree: &treespb.Tree{
+			TreeId:        treeID,
+			CreatedAt:     createdAt.Unix(),
+			TreeDiameter:  int32(treeD),
+			StumpDiameter: int32(stumpD),
+			Status:        status,
+			Health:        health,
+			SpcCommon:     spcCommon,
+			SpcLatin:      spcLatin,
+			Steward:       steward,
+			CurbLocation:  curbLocation,
+			Guards:        guards,
+			Sidewalk:      sidewalk,
+			UserType:      userType,
+			Problems:      problems,
+			RootStone:     rootStone,
+			RootGrate:     rootGrate,
+			RootOther:     rootOther,
+			TrunkLight:    trunkLight,
+			TrunkOther:    trunkOther,
+			TrunkWire:     trunkWire,
+			BranchLight:   branchLight,
+			BranchOther:   branchOther,
+			BranchShoe:    branchShoe,
+			Address:       address,
+			Zipcode:       zipcode,
+			ZipCity:       zipCity,
+			BoroughName:   boroughName,
+			Location: &treespb.Location{
+				Lat: lat,
+				Lon: lon,
+			},
+		},
 	}, nil
 }
