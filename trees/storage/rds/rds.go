@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/adamsanghera/trees/trees/treespb"
@@ -119,13 +120,14 @@ func (pg *Postgres) GetDetails(req *treespb.GetDetailsRequest) (*treespb.GetDeta
 	WHERE tree_id=$1`, req.TreeId)
 
 	var (
-		treeID, treeD, stumpD                                              int64
+		treeID, treeD, stumpD                                              sql.NullInt64
 		createdAt                                                          time.Time
-		status, health, spcLatin, spcCommon, steward                       string
-		curbLocation, guards, sidewalk, userType, problems                 string
+		status, health, spcLatin, spcCommon, steward                       sql.NullString
+		curbLocation, guards, sidewalk, userType, problems                 sql.NullString
 		rootStone, rootGrate, rootOther, trunkOther, trunkWire, trunkLight string
-		branchLight, branchShoe, branchOther, address, zipcode, zipCity    string
-		boroughName                                                        string
+		branchLight, branchShoe, branchOther, address                      string
+		zipcode                                                            int64
+		zipCity, boroughName                                               string
 		lat, lon                                                           float32
 	)
 	err := r.Scan(&treeID, &createdAt, &treeD, &stumpD,
@@ -140,20 +142,20 @@ func (pg *Postgres) GetDetails(req *treespb.GetDetailsRequest) (*treespb.GetDeta
 
 	return &treespb.GetDetailsResponse{
 		Tree: &treespb.Tree{
-			TreeId:        treeID,
+			TreeId:        treeID.Int64,
 			CreatedAt:     createdAt.Unix(),
-			TreeDiameter:  int32(treeD),
-			StumpDiameter: int32(stumpD),
-			Status:        status,
-			Health:        health,
-			SpcCommon:     spcCommon,
-			SpcLatin:      spcLatin,
-			Steward:       steward,
-			CurbLocation:  curbLocation,
-			Guards:        guards,
-			Sidewalk:      sidewalk,
-			UserType:      userType,
-			Problems:      problems,
+			TreeDiameter:  int32(treeD.Int64),
+			StumpDiameter: int32(stumpD.Int64),
+			Status:        status.String,
+			Health:        health.String,
+			SpcCommon:     spcCommon.String,
+			SpcLatin:      spcLatin.String,
+			Steward:       steward.String,
+			CurbLocation:  curbLocation.String,
+			Guards:        guards.String,
+			Sidewalk:      sidewalk.String,
+			UserType:      userType.String,
+			Problems:      problems.String,
 			RootStone:     rootStone,
 			RootGrate:     rootGrate,
 			RootOther:     rootOther,
@@ -164,7 +166,7 @@ func (pg *Postgres) GetDetails(req *treespb.GetDetailsRequest) (*treespb.GetDeta
 			BranchOther:   branchOther,
 			BranchShoe:    branchShoe,
 			Address:       address,
-			Zipcode:       zipcode,
+			Zipcode:       strconv.Itoa(int(zipcode)),
 			ZipCity:       zipCity,
 			BoroughName:   boroughName,
 			Location: &treespb.Location{
