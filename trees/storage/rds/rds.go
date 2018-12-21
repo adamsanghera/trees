@@ -39,7 +39,7 @@ type Postgres struct {
 // New creates a new postgres app driver, and returns it
 func New(password string) (*Postgres, error) {
 	db, err := sql.Open("postgres", "host=trees.cfuvv65qlkp8.us-east-2.rds.amazonaws.com "+
-		"port=5432 user=cc_trees password="+password+" dbname=trees sslmode=disable")
+		"port=5432 user=cc_trees password="+password+" dbname=trees sslmode=enable")
 	if err != nil {
 		return nil, err
 	}
