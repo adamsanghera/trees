@@ -39,7 +39,7 @@ type Postgres struct {
 // New creates a new postgres app driver, and returns it
 func New(password string) (*Postgres, error) {
 	db, err := sql.Open("postgres", "host=trees.cfuvv65qlkp8.us-east-2.rds.amazonaws.com "+
-		"port=5432 user=cc_trees password="+password+" dbname=trees sslmode=verify-full")
+		"port=5432 user=cc_trees password="+password+" dbname=trees sslmode=require")
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +48,8 @@ func New(password string) (*Postgres, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Println("Safe connection")
 
 	return &Postgres{
 		db: db,
@@ -66,7 +68,7 @@ func (pg *Postgres) Search(req *treespb.SearchRequest) (*treespb.SearchResponse,
 		numArgs += 2
 		args = append(args, f.Key, f.Value)
 	}
-	q += tailSearch + " LIMIT = $4;"
+	q += tailSearch + " LIMIT $4;"
 
 	rows, err := pg.db.Query(q, args...)
 	if err != nil {
