@@ -44,6 +44,11 @@ func New(password string) (*Postgres, error) {
 		return nil, err
 	}
 
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Postgres{
 		db: db,
 	}, nil
