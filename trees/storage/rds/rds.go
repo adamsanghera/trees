@@ -82,7 +82,7 @@ func (pg *Postgres) Search(req *treespb.SearchRequest) (*treespb.SearchResponse,
 	for rows.Next() {
 		var (
 			treeID              int64
-			spcCommon, spcLatin string
+			spcCommon, spcLatin sql.NullString
 			lat, lon            float32
 		)
 		err = rows.Scan(&treeID, &spcCommon, &spcLatin, &lat, &lon)
@@ -93,8 +93,8 @@ func (pg *Postgres) Search(req *treespb.SearchRequest) (*treespb.SearchResponse,
 
 		resp = append(resp, &treespb.CondensedTree{
 			TreeId:    treeID,
-			SpcCommon: spcCommon,
-			SpcLatin:  spcLatin,
+			SpcCommon: spcCommon.String,
+			SpcLatin:  spcLatin.String,
 			Location: &treespb.Location{
 				Lat: lat,
 				Lon: lon,
