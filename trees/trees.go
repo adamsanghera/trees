@@ -38,16 +38,19 @@ func New(password string) (*Trees, error) {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Couldn't parse latitude from url"))
+			return
 		}
 		lon, err := strconv.ParseFloat(lonStr, 32)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Couldn't parse longitude from url"))
+			return
 		}
 		rad, err := strconv.ParseFloat(radStr, 32)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Couldn't parse radius from url"))
+			return
 		}
 
 		var limit int
@@ -57,6 +60,7 @@ func New(password string) (*Trees, error) {
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				w.Write([]byte("Couldn't parse limit from url"))
+				return
 			}
 		} else {
 			limit = 100
@@ -99,12 +103,14 @@ func New(password string) (*Trees, error) {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Failed to search database " + err.Error()))
+			return
 		}
 
 		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Failed to encode JSON response " + err.Error()))
+			return
 		}
 	})
 

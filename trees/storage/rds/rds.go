@@ -68,7 +68,7 @@ func (pg *Postgres) Search(req *treespb.SearchRequest) (*treespb.SearchResponse,
 	}
 	q += tailSearch + " LIMIT = $4;"
 
-	rows, err := pg.db.Query(q, args)
+	rows, err := pg.db.Query(q, args...)
 	if err != nil {
 		log.Println(err)
 		return nil, err
