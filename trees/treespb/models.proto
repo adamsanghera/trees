@@ -1,0 +1,92 @@
+syntax="proto3";
+
+option go_package="treespb";
+
+message Tree {
+  int64 tree_id = 1;
+  int64 created_at = 2;
+  int32 tree_diameter = 3;
+  int32 stump_diameter = 4;
+  string status = 5;
+  string health = 6;
+  string spc_latin = 7;
+  string spc_common = 8;
+  string steward = 9;
+  string curb_location = 10;
+  string guards = 11; 
+  string sidewalk = 12;
+  string user_type = 13;
+  string problems = 14;
+  string root_stone = 15;
+  string root_grate = 16;
+  string root_other = 17;
+  string trunk_other = 18;
+  string trunk_wire = 19;
+  string trunk_light = 20;
+  string branch_light = 21;
+  string branch_shoe = 22;
+  string branch_other = 23;
+  string address = 24;
+  string zipcode = 25;
+  string zip_city = 26;
+  string borough_name = 27;
+  Location location = 28;
+}
+
+message CondensedTree {
+  int64 tree_id = 1;
+  string spc_common = 2;
+  string spc_latin = 3;
+  Location location = 4;
+}
+
+message Location {
+  float lat = 1;
+  float lon = 2;
+}
+
+enum FilterKey {
+  tree_id = 0;
+  created_at = 1;
+  tree_diameter = 2;
+  stump_diameter = 3;
+  status = 4;
+  health = 5;
+  spc_latin = 6;
+  spc_common = 7;
+  steward = 8;
+  curb_location = 9;
+  guards = 10; 
+  sidewalk = 11;
+  user_type = 12;
+  problems = 13;
+  root_stone = 14;
+  root_grate = 15;
+  root_other = 16;
+  trunk_other = 17;
+  trunk_wire = 18;
+  trunk_light = 29;
+  branch_light = 20;
+  branch_shoe = 21;
+  branch_other = 22;
+  address = 23;
+  zipcode = 24;
+  zip_city = 25;
+  borough_name = 26;
+}
+
+message Filter {
+  FilterKey key = 1;
+  string value = 2;
+}
+
+message SearchRequest {
+  Location origin = 1;
+  float radius = 2;
+  repeated Filter filters = 3;
+  int32 limit = 4;
+}
+
+message SearchResponse {
+  repeated CondensedTree trees = 1;
+}
